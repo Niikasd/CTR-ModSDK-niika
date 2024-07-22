@@ -160,20 +160,34 @@ void DECOMP_PlayLevel_UpdateLapStats(void)
 
 				lapCounter = currDriver->lapIndex;
 
+				#ifndef USE_ONLINE
 				// If Final Lap
 				if (lapCounter == (gGT->numLaps - 1))
 				{
 					// if this is human and not AI
 					if ((currDriver->actionsFlagSet & 0x100000) == 0)
 					{
-						#ifdef USE_ONLINE
-						if(currDriver->driverID == 0)
-						#endif
 
 							// frames, so the animation lasts 3 seconds
 							sdata->finalLapTextTimer[iVar10] = FPS_DOUBLE(90);
 					}
 				}
+				#endif
+				#ifdef USE_ONLINE
+				// online, call the finallap text timer after every lap (it will display time of last lap)
+				if (lapCounter > (0))
+				{
+					// if this is human and not AI
+					if ((currDriver->actionsFlagSet & 0x100000) == 0)
+					{
+						if(currDriver->driverID == 0)
+
+							// frames, so the animation lasts 3 seconds
+							sdata->finalLapTextTimer[iVar10] = FPS_DOUBLE(90);
+					}
+				}
+				#endif
+
 			}
 
 			// If did not just finish race
