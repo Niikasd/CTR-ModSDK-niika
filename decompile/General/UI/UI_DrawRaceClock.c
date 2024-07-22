@@ -166,8 +166,11 @@ void DECOMP_UI_DrawRaceClock(u_short paramX, u_short paramY, u_int flags, struct
 	// str = 0x4d: TIME TRIAL
 	// str = 0xc4: TOTAL
 	// str = 0xc5: YOUR TIME
+	#ifndef USE_ONLINE
 	DECOMP_DecalFont_DrawLine(sdata->lngStrings[str], (int)(short)paramX, (int)(short)paramY, fontType, (int)strFlags_but_its_also_posY);
-
+	#else
+	DECOMP_DecalFont_DrawLine("TIME/LAP:", (int)(short)paramX, (int)(short)paramY+8, fontType, (int)strFlags_but_its_also_posY);	
+	#endif
 	// set string to use data.ptrColor[1], which is the periwinkle gradient seen in the LAP text on the HUD
 	// particularly used for relic race when the time is frozen
 	strFlags_but_its_also_posY = PERIWINKLE;
@@ -226,7 +229,7 @@ void DECOMP_UI_DrawRaceClock(u_short paramX, u_short paramY, u_int flags, struct
 	if ((flags & 1) == 0)
 	{
 		posX = (int)(short)textPosX;
-		numParamY = ((u_int)textPosY + 8) * 0x10000;
+		numParamY = ((u_int)textPosY + 16) * 0x10000;
 	}
 
 	// If in the time trial results screen, reuse X and Y positions used for the rightmost margin of the "TOTAL" text used for displaying the total time, and then adjust them accordingly
@@ -239,8 +242,13 @@ void DECOMP_UI_DrawRaceClock(u_short paramX, u_short paramY, u_int flags, struct
 	// Draw String
 	#ifdef USE_ONLINE
 	char displayTime[15]; // 99:59:59.999 or BEST: 9:59.999
-	sprintf(displayTime, "%d:%02d:%02d.%03d", tt.hours, tt.minutes, tt.seconds, tt.miliseconds);
-	DECOMP_DecalFont_DrawLine(displayTime, posX, numParamY >> 0x10, FONT_BIG, (int)strFlags_but_its_also_posY);
+	if(tt.hours>0){
+		sprintf(displayTime, "%d:%02d:%02d.%03d", tt.hours, tt.minutes, tt.seconds, tt.miliseconds);
+	}else{
+		sprintf(displayTime, "%d:%02d.%03d", tt.minutes, tt.seconds, tt.miliseconds);
+	}
+	
+	DECOMP_DecalFont_DrawLine(displayTime, posX, numParamY >> 0x10, FONT_SMALL, (int)strFlags_but_its_also_posY);
 	#else
 	DECOMP_DecalFont_DrawLine(totalTimeString, posX, numParamY >> 0x10, FONT_BIG, (int)strFlags_but_its_also_posY);
 	#endif

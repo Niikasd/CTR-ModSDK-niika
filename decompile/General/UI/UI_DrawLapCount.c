@@ -24,6 +24,7 @@ void DECOMP_UI_DrawLapCount(short posX,int posY,int param_3,struct Driver* d)
   flags = PERIWINKLE;
 
   // 1P or 2P
+  #ifndef USE_ONLINE
   if (numPlyrCurrGame < 3)
   {
     // LAP
@@ -32,7 +33,7 @@ void DECOMP_UI_DrawLapCount(short posX,int posY,int param_3,struct Driver* d)
     type = FONT_BIG;
     flags = (JUSTIFY_RIGHT | PERIWINKLE);
   }
-  
+  #endif
   #ifdef USE_ONLINE
  
   char message[8];

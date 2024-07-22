@@ -47,6 +47,7 @@ void DECOMP_UI_DrawSpeedNeedle(short posX, short posY, struct Driver * driver)
   p->v[2].color = MakeColor(255, 187, 0);
 
   /* Needle is distorted in the y axis by a factor of 0.625 */
+  #ifndef USE_ONLINE
   const int needleHeight = 60;
   const int needleWidth = 6;
   const int needleCenterX = 65;
@@ -109,11 +110,21 @@ void DECOMP_UI_DrawSpeedNeedle(short posX, short posY, struct Driver * driver)
   p->v[0].pos.y = posY + (yLen + needleCenterY);
 
   AddPrimitive(p, sdata->gGT->pushBuffer_UI.ptrOT);
+  #endif
 
   #ifdef USE_ONLINE
   char s_speed[15];
   int speedInt = FP8_INT(speed);
   sprintf(s_speed, "%d", speedInt);
-  DECOMP_DecalFont_DrawLine(s_speed, posX + 60, posY + 46, FONT_SMALL, PAPU_YELLOW);
+  if(speedInt>70){
+    DECOMP_DecalFont_DrawLine(s_speed, posX + 116, posY + 47, FONT_BIG, CORTEX_RED);
+  }else{
+    if(speedInt>66){
+      DECOMP_DecalFont_DrawLine(s_speed, posX + 116, posY + 47, FONT_BIG, ROO_ORANGE);
+    }else{
+      DECOMP_DecalFont_DrawLine(s_speed, posX + 116, posY + 47, FONT_BIG, PAPU_YELLOW);
+    }
+  }
+  DECOMP_DecalFont_DrawLine("spd", posX + 116, posY + 63, FONT_SMALL, PAPU_YELLOW);
   #endif
 }

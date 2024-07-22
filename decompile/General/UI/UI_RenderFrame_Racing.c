@@ -42,7 +42,8 @@ void DECOMP_UI_RenderFrame_Racing()
 	u_int mapPosY;
 
 	#ifdef USE_ONLINE
-	offset = WIDE_PICK(-19, -27);
+	char pos[2];
+	offset = WIDE_PICK(-19, -222);
 	#else
 	offset = 0;
 	#endif
@@ -216,7 +217,7 @@ void DECOMP_UI_RenderFrame_Racing()
 				DECOMP_UI_DrawSpeedNeedle(hudStructPtr[9].x + offset, hudStructPtr[9].y, playerStruct);
 				DECOMP_UI_DrawSlideMeter(hudStructPtr[8].x + offset - 8, hudStructPtr[8].y + 3, playerStruct);
 				DECOMP_UI_JumpMeter_Draw(hudStructPtr[8].x + offset + 18, hudStructPtr[8].y - 7, playerStruct);
-				DECOMP_UI_DrawSpeedBG();
+				//DECOMP_UI_DrawSpeedBG();
 				#else
 				DECOMP_UI_DrawSpeedNeedle(hudStructPtr[9].x + offset, hudStructPtr[9].y, playerStruct);
 				DECOMP_UI_JumpMeter_Draw(hudStructPtr[6].x, hudStructPtr[6].y, playerStruct);
@@ -510,10 +511,18 @@ void DECOMP_UI_RenderFrame_Racing()
 			if ((gameMode1 & BATTLE_MODE) == 0)
 			{
 				//if racer hasn't finished the race
+				#ifdef USE_ONLINE
+				if ((playerStruct->actionsFlagSet & 0x2000000) == 0)
+				{
+					DECOMP_UI_DrawLapCount(102, 165, (u_int)hudStructPtr[1].scale, playerStruct);
+				}
+				#endif
+				#ifndef USE_ONLINE
 				if ((playerStruct->actionsFlagSet & 0x2000000) == 0)
 				{
 					DECOMP_UI_DrawLapCount(hudStructPtr[1].x, hudStructPtr[1].y, (u_int)hudStructPtr[1].scale, playerStruct);
 				}
+				#endif
 			}
 
 			// if you're in battle mode
@@ -581,6 +590,15 @@ void DECOMP_UI_RenderFrame_Racing()
 				DECOMP_UI_DrawPosSuffix(sVar1, sVar2, playerStruct, (short)partTimeVariable5);
 				#endif
 
+				#ifdef USE_ONLINE
+					//draw online rank
+				pos[0] = (char)('1' + playerStruct->driverRank);
+				pos[1] = '\0';
+				DECOMP_DecalFont_DrawLine(&pos, 185, 192, FONT_BIG, ORANGE);
+				DECOMP_DecalFont_DrawLine(sdata->lngStrings[data.stringIndexSuffix[playerStruct->driverRank]], 185, 208, FONT_SMALL, ORANGE);
+
+				#endif
+
 				if (numPlyr > 2)
 				{
 					// Get Color Data
@@ -588,6 +606,7 @@ void DECOMP_UI_RenderFrame_Racing()
 
 					// icon pointer, specifically for the big rank icons that start at 0x19
 					iconPtr = gGT->ptrIcons[(int)playerStruct->driverRank + 0x19];
+
 
 					LAB_80053aec:
 
@@ -597,7 +616,7 @@ void DECOMP_UI_RenderFrame_Racing()
 						iconPtr,
 
 						// position
-						(int)hudStructPtr[2].x,
+						(int)hudStructPtr[2].x+120,
 						(int)hudStructPtr[2].y,
 
 						&gGT->backBuffer->primMem,
@@ -611,7 +630,9 @@ void DECOMP_UI_RenderFrame_Racing()
 
 						0, FP(1.0)
 					);
+
 				}
+
 			}
 
 			// If you're in end-of-race and Battle
@@ -691,7 +712,7 @@ void DECOMP_UI_RenderFrame_Racing()
 	{
 		playerStruct = gGT->drivers[0];
 
-		DECOMP_UI_DrawRaceClock(0x14, 8, 0, playerStruct);
+		DECOMP_UI_DrawRaceClock(0x10, 165, 0, playerStruct);
 
 		turboThread = 0;
 		turboThreadObject = 0;
@@ -916,7 +937,8 @@ void DECOMP_UI_RenderFrame_Racing()
 
 			mapPosX = 500;
 			#ifdef USE_ONLINE
-			mapPosY = 145;
+			//mapPosY = 145;
+			mapPosY = 205;
 			#else
 			mapPosY = 195;
 			#endif

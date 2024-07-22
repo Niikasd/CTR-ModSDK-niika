@@ -90,7 +90,8 @@ void DECOMP_UI_DrawRankedDrivers(void)
 	int numPlyr = gGT->numPlyrCurrGame;
 
     if (numPlyr == 1)
-	{
+	{		
+		iVar14 = 0;
       // Number of racers that have finished race
       numRacersFinished = 0;
 
@@ -127,7 +128,7 @@ void DECOMP_UI_DrawRankedDrivers(void)
       }
 
 	  #ifdef USE_ONLINE
-	  int OnlineGetNumDrivers();
+	  //int OnlineGetNumDrivers();
 	  int oNumDrivers = OnlineGetNumDrivers();
 	  if(oNumDrivers < 9) { iVar14 = oNumDrivers; }
 	  #endif
@@ -196,7 +197,7 @@ void DECOMP_UI_DrawRankedDrivers(void)
 
 			  #ifdef USE_ONLINE
 			  pos.x = 10;
-			  pos.y = 53 + iVar12 * 20;
+			  pos.y = 10 + iVar12 * 20;
 			  #else
 			  if (iVar12 < 4)
 			  {
@@ -213,7 +214,7 @@ void DECOMP_UI_DrawRankedDrivers(void)
 		  txtColor = 4;
 		  if (checkpointTracker[iVar15].raceFinished) { txtColor = 3; }
 		  sdata->s_spacebar[0] = (char) *curr + '1';
-		  DECOMP_DecalFont_DrawLine(&sdata->s_spacebar[0], 29, 53 + *curr * 20, 2, txtColor);
+		  DECOMP_DecalFont_DrawLine(&sdata->s_spacebar[0], 29, 10 + *curr * 20, 2, txtColor);
 		  #else
           short iconScale = FP(1);
 		  #endif
