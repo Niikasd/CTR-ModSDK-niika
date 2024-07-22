@@ -1,4 +1,7 @@
 #include <common.h>
+#ifdef USE_ONLINE
+#include "../AltMods/OnlineCTR/global.h"
+#endif
 
 // all in this file
 void DrawUnpluggedMsg(struct GameTracker* gGT, struct GamepadSystem* gGamepads);
@@ -340,7 +343,7 @@ void DECOMP_MainFrame_RenderFrame(struct GameTracker* gGT, struct GamepadSystem*
 			if((gGT->renderFlags & 0x8000) != 0)
 			{
 				WindowBoxLines(gGT);
-
+				
 				WindowDivsionLines(gGT);
 			}
 			#endif
@@ -552,11 +555,38 @@ DrawFinalLapString:
 
 		// need to specify OT, or else "FINAL LAP" will draw on top of character icons,
 		// and by doing this, "FINAL LAP" draws under the character icons instead
+
+		#ifndef USE_ONLINE
 		DECOMP_DecalFont_DrawLineOT(
 			sdata->lngStrings[0x8cc/4],
 			resultPos[0], resultPos[1],
 			FONT_BIG, (JUSTIFY_CENTER | ORANGE),
 			pb->ptrOT);
+		#endif
+
+		#ifdef USE_ONLINE
+		//display last lap 
+		TotalTime tt;
+		char displayTime[15];
+		int lapElapsed = gGT->drivers[0]->currLapTime;
+		int bestLap = gGT->drivers[0]->bestLapTime;
+		int drawColor = PERIWINKLE;
+		//if best lap or tied to it, colors the text green.
+		if (lapElapsed == bestLap)
+		{
+			drawColor = TINY_GREEN;
+		}
+
+		ElapsedTimeToTotalTime(&tt, lapElapsed);
+		tt.minutes = min(tt.minutes, 9);
+		sprintf(displayTime, "%d:%02d.%03d", tt.minutes, tt.seconds, tt.miliseconds);
+
+		DECOMP_DecalFont_DrawLineOT(
+			displayTime,
+			resultPos[0], resultPos[1],
+			FONT_SMALL, (JUSTIFY_CENTER | drawColor),
+			pb->ptrOT);
+		#endif
 
 		sdata->finalLapTextTimer[i]--;
 	}
@@ -1483,7 +1513,7 @@ void MultiplayerWumpaHUD(struct GameTracker* gGT)
 	for(int i = 0; i < gGT->numPlyrCurrGame; i++)
 	{
 		struct Driver* d = gGT->drivers[i];
-
+		
 		// if race is over for driver
 		if((d->actionsFlagSet & 0x2000000) != 0)
 		{
@@ -1711,10 +1741,16 @@ void RenderVSYNC(struct GameTracker* gGT)
 
 		if(ReadyToFlip(gGT))
 		{
+
+#ifdef USE_ONLINE
+			if(boolFirstFrame)
+				octr->gpuSubmitTooLate = 1;
+#endif
+			
 			// quit, end of stall
 			return;
 		}
-
+		
 #ifdef USE_ONLINE
 		// gpu submission is not too late,
 		// we got to this while() loop before
